@@ -1,0 +1,27 @@
+#subtitle-hider {
+    z-index: 999999;
+    bottom: 30px;
+    right: 15vw;
+    height: 100px;
+    width: 70vw;
+    position: fixed !important;
+    backdrop-filter: blur(7px);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 5px;
+    display: inline-block;
+    opacity: 1;
+    visibility: visible !important;
+    transition: opacity 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+#subtitle-hider>* {
+    display: block !important;
+    opacity: 1;
+    visibility: visible !important;
+    opacity: 1;
+}
+
+.hidden {
+    opacity: 0 !important;
+    display: none !important;
+}
