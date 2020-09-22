@@ -1,5 +1,5 @@
 #subtitle-hider {
-    z-index: 999999;
+    z-index: 2147483647;
     bottom: 30px;
     right: 15vw;
     height: 100px;

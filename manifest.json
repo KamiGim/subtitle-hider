@@ -2,10 +2,8 @@
 	"manifest_version": 2,
 	"name": "Subtitle Hider",
 	"version": "0.1",
-	"description": "A simple addon that hide hard-subtitle",
+	"description": "A simple addon that can hide hard subtitle",
 	"permissions": [
-		"activeTab",
-		"storage",
 		"*://*/*"
 	],
 	"icons": {
