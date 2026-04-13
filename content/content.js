@@ -4,7 +4,7 @@
   const STORAGE_KEY = 'subtitleHider_';
   let overlay, controls, opacitySlider;
   let isDragging = false, isResizing = false;
-  let startX, startY, startW, startH, startLeft, startBottom;
+  let startX, startY, startW, startH, startLeft, startTop;
   let resizeDir = '';
 
   function getDomain() {
@@ -25,6 +25,10 @@
     overlay = document.createElement('div');
     overlay.id = 'subtitle-hider';
     overlay.style.display = 'none';
+    // Use left/top only — no right/bottom mixing
+    overlay.style.left = '0';
+    overlay.style.top = '0';
+    overlay.style.transform = 'translateX(0) translateY(0)';
 
     // Opacity slider (tiny control in corner)
     controls = document.createElement('div');
@@ -61,11 +65,12 @@
       h.className = 'sh-resize-handle';
       h.dataset.dir = dir;
       h.style.cssText = 'position:absolute;z-index:2;';
-      // Position the handle
-      const pos = { nw:'top:0;left:0;cursor:nw-resize;', n:'top:0;left:50%;transform:translateX(-50%);cursor:n-resize;',
+      const pos = {
+        nw:'top:0;left:0;cursor:nw-resize;', n:'top:0;left:50%;transform:translateX(-50%);cursor:n-resize;',
         ne:'top:0;right:0;cursor:ne-resize;', e:'top:50%;right:0;transform:translateY(-50%);cursor:e-resize;',
         se:'bottom:0;right:0;cursor:se-resize;', s:'bottom:0;left:50%;transform:translateX(-50%);cursor:s-resize;',
-        sw:'bottom:0;left:0;cursor:sw-resize;', w:'top:50%;left:0;transform:translateY(-50%);cursor:w-resize;' };
+        sw:'bottom:0;left:0;cursor:sw-resize;', w:'top:50%;left:0;transform:translateY(-50%);cursor:w-resize;'
+      };
       h.style.cssText += pos[dir] + 'width:12px;height:12px;';
       overlay.appendChild(h);
     });
@@ -76,12 +81,21 @@
     overlay.addEventListener('mouseenter', () => { controls.style.opacity = '1'; });
     overlay.addEventListener('mouseleave', () => { controls.style.opacity = '0'; });
 
-    // Apply saved settings
+    // Apply saved settings or defaults
     const settings = loadSettings();
-    if (settings.width) overlay.style.width = settings.width + 'px';
-    if (settings.height) overlay.style.height = settings.height + 'px';
-    if (settings.left) overlay.style.left = settings.left + 'px';
-    if (settings.bottom) overlay.style.bottom = settings.bottom + 'px';
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const w = settings.width || Math.round(vw * 0.7);
+    const h = settings.height || 100;
+    const x = settings.x != null ? settings.x : Math.round(vw * 0.15);
+    const y = settings.y != null ? settings.y : vh - h - 30;
+
+    overlay.style.width = w + 'px';
+    overlay.style.height = h + 'px';
+    overlay.style.left = x + 'px';
+    overlay.style.top = y + 'px';
+    overlay.style.transform = 'none';
+
     if (settings.opacity != null) {
       overlay.style.opacity = settings.opacity;
       opacitySlider.value = settings.opacity;
@@ -98,7 +112,7 @@
       startX = e.clientX;
       startY = e.clientY;
       startLeft = overlay.offsetLeft;
-      startBottom = parseInt(getComputedStyle(overlay).bottom) || 30;
+      startTop = overlay.offsetTop;
       e.preventDefault();
     });
   }
@@ -114,48 +128,50 @@
         startW = rect.width;
         startH = rect.height;
         startLeft = rect.left;
+        startTop = rect.top;
         e.preventDefault();
         e.stopPropagation();
       });
     });
   }
 
+  function persist() {
+    const settings = loadSettings();
+    settings.width = parseInt(overlay.style.width);
+    settings.height = parseInt(overlay.style.height);
+    settings.x = overlay.offsetLeft;
+    settings.y = overlay.offsetTop;
+    if (overlay.style.opacity) settings.opacity = parseFloat(overlay.style.opacity);
+    saveSettings(settings);
+  }
+
   document.addEventListener('mousemove', (e) => {
     if (isDragging && overlay) {
       const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
       overlay.style.left = (startLeft + dx) + 'px';
-      // Keep bottom fixed during drag — only move left/right
-      const settings = loadSettings();
-      settings.left = overlay.offsetLeft;
-      saveSettings(settings);
+      overlay.style.top = (startTop + dy) + 'px';
     }
     if (isResizing && overlay) {
       const dx = e.clientX - startX;
       const dy = e.clientY - startY;
       let newW = startW, newH = startH;
+      let newLeft = startLeft, newTop = startTop;
 
       if (resizeDir.includes('e')) newW = startW + dx;
-      if (resizeDir.includes('w')) { newW = startW - dx; overlay.style.left = (startLeft + dx) + 'px'; }
+      if (resizeDir.includes('w')) { newW = startW - dx; newLeft = startLeft + dx; }
       if (resizeDir.includes('s')) newH = startH + dy;
-      if (resizeDir.includes('n')) {
-        newH = startH - dy;
-        const currentBottom = parseInt(getComputedStyle(overlay).bottom) || 30;
-        overlay.style.bottom = (currentBottom + dy) + 'px';
-      }
+      if (resizeDir.includes('n')) { newH = startH - dy; newTop = startTop + dy; }
 
       if (newW >= 60) overlay.style.width = newW + 'px';
       if (newH >= 20) overlay.style.height = newH + 'px';
-
-      const settings = loadSettings();
-      settings.width = parseInt(overlay.style.width);
-      settings.height = parseInt(overlay.style.height);
-      settings.left = overlay.offsetLeft;
-      settings.bottom = parseInt(getComputedStyle(overlay).bottom) || 30;
-      saveSettings(settings);
+      overlay.style.left = newLeft + 'px';
+      overlay.style.top = newTop + 'px';
     }
   });
 
   document.addEventListener('mouseup', () => {
+    if ((isDragging || isResizing) && overlay) persist();
     isDragging = false;
     isResizing = false;
   });

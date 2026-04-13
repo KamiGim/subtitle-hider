@@ -1,7 +1,5 @@
 #subtitle-hider {
   z-index: 2147483647;
-  bottom: 30px;
-  right: 15vw;
   height: 100px;
   width: 70vw;
   position: fixed !important;
@@ -11,8 +9,8 @@
   border-radius: 6px;
   opacity: 1;
   visibility: visible !important;
-  transition: opacity 0.5s cubic-bezier(0.18, 0.89, 0.32, 1.28);
   box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.08);
+  /* left/top are set dynamically by JS */
 }
 
 #subtitle-hider > * {
