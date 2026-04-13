@@ -1,39 +1,47 @@
 {
-	"manifest_version": 2,
-	"name": "Subtitle Hider",
-	"version": "0.1",
-	"description": "A simple addon that can hide hard subtitle",
-	"permissions": [
-		"*://*/*"
-	],
-	"icons": {
-		"16": "icon/icon16.png",
-		"32": "icon/icon32.png",
-		"64": "icon/icon64.png"
-	},
-	"browser_action": {
-		"default_icon": "icon/icon.png",
-		"default_title": "Toggle subtitle hider"
-	},
-	"background": {
-		"scripts": [
-			"bg/background.js"
-		]
-	},
-	"content_scripts": [
-		{
-			"matches": [
-				"<all_urls>"
-			],
-			"js": [
-				"libs/jquery.min.js",
-				"libs/jquery-ui.min.js",
-				"content/content.js"
-			],
-			"css": [
-				"libs/jquery-ui.min.css",
-				"css/root.css"
-			]
-		}
-	]
+  "manifest_version": 3,
+  "name": "Subtitle Hider",
+  "version": "2.0",
+  "description": "A draggable, resizable blur overlay to hide hardcoded subtitles on any page.",
+  "permissions": ["storage", "scripting", "activeTab"],
+  "icons": {
+    "16": "icon/icon16.png",
+    "32": "icon/icon32.png",
+    "64": "icon/icon64.png",
+    "128": "icon/icon128.png"
+  },
+  "action": {
+    "default_icon": "icon/icon.png",
+    "default_title": "Toggle subtitle hider"
+  },
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content/content.js"],
+      "css": ["css/root.css"],
+      "run_at": "document_idle"
+    }
+  ],
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "toggle-subtitle-hider": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+S",
+        "mac": "Command+Shift+S"
+      },
+      "description": "Toggle subtitle hider overlay"
+    }
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "subtitle-hider@example.com",
+      "strict_min_version": "109.0"
+    }
+  }
 }

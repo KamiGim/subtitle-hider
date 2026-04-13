@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Subtitle Hider – Options</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; max-width: 480px; margin: 40px auto; padding: 20px; color: #333; }
+    h1 { font-size: 1.4em; margin-bottom: 24px; }
+    h2 { font-size: 1.1em; margin: 20px 0 12px; color: #555; }
+    label { display: block; margin-bottom: 4px; font-size: 0.9em; color: #666; }
+    .row { margin-bottom: 16px; }
+    input[type="range"] { width: 100%; }
+    .btn { background: #e74c3c; color: #fff; border: none; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-size: 0.9em; }
+    .btn:hover { background: #c0392b; }
+    .about { margin-top: 32px; padding: 16px; background: #f5f5f5; border-radius: 6px; font-size: 0.85em; color: #777; line-height: 1.5; }
+    kbd { background: #eee; padding: 2px 6px; border-radius: 3px; font-size: 0.85em; }
+  </style>
+</head>
+<body>
+  <h1>🎬 Subtitle Hider Options</h1>
+
+  <h2>Defaults</h2>
+  <div class="row">
+    <label>Default Opacity: <span id="opacity-val">1.0</span></label>
+    <input type="range" id="default-opacity" min="0" max="1" step="0.05" value="1">
+  </div>
+
+  <div class="row">
+    <button class="btn" id="reset-btn">Reset All Settings</button>
+  </div>
+
+  <div class="about">
+    <strong>Subtitle Hider v2.0</strong><br>
+    A draggable, resizable blur overlay to hide hardcoded subtitles on any page.<br><br>
+    <strong>Keyboard shortcut:</strong> <kbd>Ctrl+Shift+S</kbd> (<kbd>⌘+Shift+S</kbd> on Mac)<br>
+    Click the toolbar icon or use the shortcut to toggle.<br><br>
+    Settings are saved per site. Overlay position, size, and opacity persist across reloads.
+  </div>
+
+  <script src="options/options.js"></script>
+</body>
+</html>
